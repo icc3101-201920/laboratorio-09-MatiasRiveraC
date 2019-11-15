@@ -220,7 +220,12 @@ namespace Laboratorio_8_OOP_201920
                 else
                 {
                     Boolean cycle = true;
-                    while (cycle)
+					foreach(Player p in Players)
+					{
+						SuscriberInitTurn(p);
+					}
+
+					while (cycle)
                     {
                         ActivePlayer = Players[firstOrSecondUser];
                         //Obtener lifePoints
@@ -446,5 +451,26 @@ namespace Laboratorio_8_OOP_201920
             }
             
         }
+
+		/////////////////////////////////////////////
+		private void SuscriberInitTurn(Player player)
+		{
+			player.CardPlayed += this.OnPlayedCard;
+		}
+
+
+		public void OnPlayedCard(object source, PlayerEventArgs e)
+		{
+			if (e.Player == players[0])
+			{
+				Effect.ApplyEffect(e.Carta, e.Player, players[1], boardGame);
+			}
+			else
+			{
+				Effect.ApplyEffect(e.Carta, e.Player, players[0], boardGame);
+			}
+		}
+
+		//////////////////////////////////////////////
     }
 }

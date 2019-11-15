@@ -93,13 +93,16 @@ namespace Laboratorio_8_OOP_201920
             }
         }
 
-        //Metodos
-        public void DrawCard(int cardId = 0)
+		//Metodos
+	
+
+		public void DrawCard(int cardId = 0)
         {
             Card tempCard = CreateTempCard(cardId);
             hand.AddCard(tempCard);
             deck.DestroyCard(cardId);
-        }
+			CheckEffect();
+		}
         public void PlayCard(int cardId, EnumType buffRow = EnumType.None)
         {
             
@@ -108,17 +111,22 @@ namespace Laboratorio_8_OOP_201920
             if (tempCard is CombatCard)
             {
                 board.AddCard(tempCard, this.Id);
+
+				CheckEffect();
             }
             else
             {
                 if (tempCard.Type == EnumType.buff)
                 {
                     board.AddCard(tempCard, this.Id, buffRow);
-                }
+					CheckEffect();
+				}
                 else
                 {
                     board.AddCard(tempCard);
-                }
+					CheckEffect();
+				}
+
             }
             hand.DestroyCard(cardId);
         }
@@ -133,7 +141,8 @@ namespace Laboratorio_8_OOP_201920
             hand.AddCard(tempDeckCard);
             deck.DestroyCard(deckCardId);
             deck.AddCard(tempCard);
-        }
+			CheckEffect();
+		}
 
         public void FirstHand()
         {
@@ -186,5 +195,29 @@ namespace Laboratorio_8_OOP_201920
             }
             return new int[] { attackPoints };
         }
-    }
+
+		//////////////////////////////////////////////
+		public event EventHandler<PlayerEventArgs> CardPlayed;
+
+		public virtual void OnCardPlayed(Card card)
+		{
+			if (CardPlayed != null)
+			{
+				CardPlayed(this, new PlayerEventArgs() { Carta = card, Player = this });
+			}
+		}
+
+		public void CheckEffect()
+		{
+			foreach (Card c in Deck.Cards)
+			{
+				if (Enum.IsDefined(typeof(EnumEffect), c.CardEffect))
+				{
+					OnCardPlayed(c);
+				}
+			}
+		}
+
+		//////////////////////////////////////////////
+	}
 }
